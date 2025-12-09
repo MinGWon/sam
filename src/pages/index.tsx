@@ -107,7 +107,7 @@ export default function Home() {
   };
 
   if (loading) {
-    return <div className={styles.page}>로딩 중...</div>;
+    return <div className={styles.page} style={{ backgroundColor: "#ffffff", minHeight: "100vh", color: "#171717" }}>로딩 중...</div>;
   }
 
   return (
@@ -118,8 +118,8 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className={styles.page}>
-        <main className={styles.main}>
+      <div className={styles.page} style={{ backgroundColor: "#ffffff", minHeight: "100vh", color: "#171717" }}>
+        <main className={styles.main} style={{ backgroundColor: "#ffffff", color: "#171717" }}>
           <h1 style={{ 
             minHeight: "1.5em",
             lineHeight: "1.5",
