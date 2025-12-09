@@ -3,117 +3,83 @@ import React from "react";
 const colors = {
   primary: "#3182f6",
   primaryLight: "#e8f3ff",
-  white: "#ffffff",
-  gray100: "#f3f5f7",
-  gray200: "#eaecef",
-  gray300: "#d5d8dc",
-  gray500: "#8b8f94",
-  gray600: "#6b6e72",
-  gray700: "#45474a",
-  red: "#f04452",
-  redLight: "#fee2e2",
-  green: "#30b06e",
-  greenLight: "#dcfce7",
-  yellow: "#d97706",
-  yellowLight: "#fef3c7",
+  success: "#30b06e",
+  successLight: "#dcfce7",
+  warning: "#fbbf24",
+  warningLight: "#fef3c7",
+  danger: "#f04452",
+  dangerLight: "#fee2e2",
+  gray: "#6b6e72",
+  grayLight: "#f3f5f7",
 };
 
-export type SemiTagVariant = "primary" | "success" | "warning" | "danger" | "gray";
-export type SemiTagSize = "sm" | "md";
+export type SemiTagButtonVariant = "primary" | "success" | "warning" | "danger" | "gray";
+export type SemiTagButtonSize = "sm" | "md";
 
-export interface SemiTagButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: SemiTagVariant;
-  size?: SemiTagSize;
+export interface SemiTagButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "size"> {
+  variant?: SemiTagButtonVariant;
+  size?: SemiTagButtonSize;
   icon?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export default function SemiTagButton({
   variant = "primary",
   size = "md",
   icon,
-  disabled,
   children,
+  disabled,
   style,
-  onMouseEnter,
-  onMouseLeave,
   ...props
 }: SemiTagButtonProps) {
-  const [isHovered, setIsHovered] = React.useState(false);
-  const [isFocused, setIsFocused] = React.useState(false);
+  const colorMap = {
+    primary: { bg: colors.primaryLight, text: colors.primary },
+    success: { bg: colors.successLight, text: colors.success },
+    warning: { bg: colors.warningLight, text: colors.warning },
+    danger: { bg: colors.dangerLight, text: colors.danger },
+    gray: { bg: colors.grayLight, text: colors.gray },
+  };
 
   const sizeStyles = {
-    sm: { padding: "4px 8px", fontSize: "11px" },
-    md: { padding: "6px 10px", fontSize: "12px" },
+    sm: { padding: "6px 8px", fontSize: "12px", gap: "4px" },
+    md: { padding: "8px 10px", fontSize: "13px", gap: "6px" },
   };
 
-  const variantStyles = {
-    primary: {
-      background: colors.primaryLight,
-      color: colors.primary,
-    },
-    success: {
-      background: colors.greenLight,
-      color: colors.green,
-    },
-    warning: {
-      background: colors.yellowLight,
-      color: colors.yellow,
-    },
-    danger: {
-      background: colors.redLight,
-      color: colors.red,
-    },
-    gray: {
-      background: colors.gray100,
-      color: colors.gray600,
-    },
-  };
-
-  const borderColor = isHovered || isFocused ? colors.primary : "transparent";
-  const boxShadow = isHovered || isFocused 
-    ? `0 0 0 3px ${colors.primary}20` 
-    : "none";
+  const { bg, text } = colorMap[variant];
 
   return (
     <button
       {...props}
       disabled={disabled}
-      onMouseEnter={(e) => {
-        setIsHovered(true);
-        onMouseEnter?.(e);
-      }}
-      onMouseLeave={(e) => {
-        setIsHovered(false);
-        onMouseLeave?.(e);
-      }}
-      onFocus={(e) => {
-        setIsFocused(true);
-        props.onFocus?.(e);
-      }}
-      onBlur={(e) => {
-        setIsFocused(false);
-        props.onBlur?.(e);
-      }}
       style={{
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: "4px",
-        border: `1px solid ${borderColor}`,
+        background: disabled ? colors.grayLight : bg,
+        color: disabled ? "#999" : text,
+        border: "none",
         borderRadius: "6px",
-        fontWeight: "600",
         cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.6 : 1,
         transition: "all 0.2s ease",
-        boxShadow,
-        transform: isHovered || isFocused ? "translateY(-1px)" : "translateY(0)",
-        ...sizeStyles[size],
-        ...variantStyles[variant],
+        fontSize: sizeStyles[size].fontSize,
+        padding: sizeStyles[size].padding,
+        gap: sizeStyles[size].gap,
+        whiteSpace: "nowrap",
         ...style,
       }}
+      onMouseEnter={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.transform = "translateY(-1px)";
+          e.currentTarget.style.boxShadow = `0 4px 8px rgba(0, 0, 0, 0.1)`;
+        }
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "none";
+      }}
     >
-      {icon && <i className={icon} />}
+      {icon && <i className={icon} style={{ fontSize: size === "sm" ? "10px" : "12px" }} />}
       {children}
     </button>
   );

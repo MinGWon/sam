@@ -18,7 +18,7 @@ export interface SelectOption {
   label: string;
 }
 
-export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
+export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size' | 'required'> {
   size?: SelectSize;
   fullWidth?: boolean;
   error?: string;
@@ -81,7 +81,7 @@ export default function Select({
           }}
         >
           {label}
-          {props.required && <span style={{ color: colors.red, marginLeft: "4px" }}>*</span>}
+          {requiredProp && <span style={{ color: colors.red, marginLeft: "4px" }}>*</span>}
         </label>
       )}
 
@@ -107,6 +107,7 @@ export default function Select({
         <select
           {...props}
           disabled={disabled}
+          required={requiredProp}
           onFocus={(e) => {
             setIsFocused(true);
             props.onFocus?.(e);

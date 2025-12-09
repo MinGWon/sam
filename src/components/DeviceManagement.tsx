@@ -201,14 +201,16 @@ export default function DeviceManagement({ tabId }: { tabId?: string }) {
     const timeoutId = setTimeout(() => {
       setTabState(tabId, {
         deviceManagement: {
+          searchTerm: "",
           selectedDevice,
+          displayedDevices: devices,
           filterStatus,
         },
       });
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [selectedDevice, filterStatus]);
+  }, [selectedDevice, filterStatus, devices]);
 
   // CompactTable 컬럼 정의
   const deviceColumns: TableColumn[] = [

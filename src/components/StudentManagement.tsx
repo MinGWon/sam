@@ -83,6 +83,20 @@ export default function StudentManagement({ tabId }: { tabId?: string }) {
     fetchStudents();
   }, []);
 
+  // filteredStudents 계산 (useEffect 이전에 선언)
+  const filteredStudents = students.filter((student) => {
+    const matchesSearch =
+      student.name.includes(searchTerm) ||
+      student.fingerprintId.toString().includes(searchTerm) ||
+      (student.grade && student.grade.toString().includes(searchTerm)) ||
+      (student.class && student.class.toString().includes(searchTerm)) ||
+      (student.number && student.number.toString().includes(searchTerm));
+
+    const matchesGrade = filterGrade === "" || student.grade?.toString() === filterGrade;
+
+    return matchesSearch && matchesGrade;
+  });
+
   // Debounced 저장
   useEffect(() => {
     if (!tabId) return;
@@ -91,13 +105,17 @@ export default function StudentManagement({ tabId }: { tabId?: string }) {
       setTabState(tabId, {
         studentManagement: {
           searchTerm,
+          selectedGrade: filterGrade,
+          selectedClass: "",
+          displayedStudents: filteredStudents,
+          selectedStudent: editingStudent,
           selectedStudents,
         },
       });
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, selectedStudents]);
+  }, [searchTerm, selectedStudents, filteredStudents, editingStudent, filterGrade, tabId, setTabState]);
 
   const handleAdd = async () => {
     setError(null);
@@ -185,19 +203,6 @@ export default function StudentManagement({ tabId }: { tabId?: string }) {
     const mins = minutes % 60;
     return `${hours}시간 ${mins}분`;
   };
-
-  const filteredStudents = students.filter((student) => {
-    const matchesSearch =
-      student.name.includes(searchTerm) ||
-      student.fingerprintId.toString().includes(searchTerm) ||
-      (student.grade && student.grade.toString().includes(searchTerm)) ||
-      (student.class && student.class.toString().includes(searchTerm)) ||
-      (student.number && student.number.toString().includes(searchTerm));
-
-    const matchesGrade = filterGrade === "" || student.grade?.toString() === filterGrade;
-
-    return matchesSearch && matchesGrade;
-  });
 
   const handleRowClick = (student: Student) => {
     if (selectedStudents.includes(student.id)) {

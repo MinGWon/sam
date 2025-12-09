@@ -5,7 +5,7 @@ import { persist } from 'zustand/middleware';
 interface Device {
   id: string;
   deviceNumber: string;
-  location: string;
+  location?: string | null; // location 필드를 선택사항으로 변경
   isActive: boolean;
 }
 
@@ -23,8 +23,9 @@ export interface TabState {
   // DeviceManagement 상태
   deviceManagement?: {
     searchTerm: string;
-    selectedDevice: Device | null;
+    selectedDevice: string | null;
     displayedDevices: Device[];
+    filterStatus: string;
   };
   
   // StudentManagement 상태
@@ -34,6 +35,7 @@ export interface TabState {
     selectedClass: string;
     displayedStudents: Student[];
     selectedStudent: Student | null;
+    selectedStudents: string[];
   };
   
   // AttendanceViewer 상태

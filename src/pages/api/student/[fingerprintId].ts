@@ -48,7 +48,6 @@ export default async function handler(
           name: student.name,
           grade: student.grade,
           class: student.class,
-          studentNumber: student.studentNumber,
           totalStudyTime: totalStudyTime._sum.studyDuration || 0,
           attendanceCount,
           recentAttendances: student.attendances,

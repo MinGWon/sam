@@ -13,7 +13,7 @@ const colors = {
 
 export type InputSize = "sm" | "md" | "lg";
 
-export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'required'> {
   size?: InputSize;
   fullWidth?: boolean;
   error?: string;
@@ -78,7 +78,7 @@ export default function Input({
           }}
         >
           {label}
-          {props.required && <span style={{ color: colors.red, marginLeft: "4px" }}>*</span>}
+          {requiredProp && <span style={{ color: colors.red, marginLeft: "4px" }}>*</span>}
         </label>
       )}
 
@@ -121,6 +121,7 @@ export default function Input({
         <input
           {...props}
           disabled={disabled}
+          required={requiredProp}
           onFocus={(e) => {
             setIsFocused(true);
             props.onFocus?.(e);
