@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://pm2:2792@192.168.45.208:3306/samsqaure2"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  visibleId String   @unique
+  pkiUserId String   @unique // PKI 서버에서 반환한 유저 ID
+  certId    String?  @unique // 인증서 ID
+  name      String
+  phone     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([pkiUserId])
+  @@index([certId])
+}
+
+model Menu {
+  id        String   @id @default(uuid())
+  menuId    String   @unique // 메뉴 고유 ID (예: home, academic)
+  label     String
+  icon      String
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subMenus  SubMenu[]
+}
+
+model SubMenu {
+  id        String   @id @default(uuid())
+  subMenuId String   @unique // 서브메뉴 고유 ID
+  label     String
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  menuId    String
+  menu      Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items     MenuItem[]
+
+  @@index([menuId])
+}
+
+model MenuItem {
+  id        String   @id @default(uuid())
+  itemId    String   @unique // 아이템 고유 ID
+  label     String
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  subMenuId String
+  subMenu   SubMenu  @relation(fields: [subMenuId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subMenuId])
+}
+
+model Device {
+  id            String   @id @default(cuid())
+  deviceNumber  String   @unique // 기기번호
+  name          String   // 기기명
+  location      String?  // 설치 위치
+  authCode      String?  // 1회용 인가코드
+  authCodeExpiry DateTime? // 인가코드 만료시간
+  isActive      Boolean  @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Student {
+  id              String       @id @default(cuid())
+  fingerprintId   Int          @unique
+  name            String
+  grade           Int?
+  class           Int?
+  number          Int?
+  totalStudyTime  Int          @default(0)
+  attendanceCount Int          @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  attendances     Attendance[]
+
+  @@index([fingerprintId])
+  @@index([grade, class, number])
+}
+
+model Attendance {
+  id            String    @id @default(cuid())
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  deviceNumber  String
+  checkInTime   DateTime
+  checkOutTime  DateTime?
+  studyDuration Int?      // 분 단위
+  date          DateTime  // 날짜만 (YYYY-MM-DD)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([studentId, date])
+  @@index([deviceNumber, date])
+  @@index([date])
+  @@index([studentId, checkInTime])
+}

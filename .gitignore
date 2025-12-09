@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Database
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# 백업은 유지
+!backups/*.db

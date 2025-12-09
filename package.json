@@ -5,17 +5,30 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "migrate:safe": "npm run backup && npx prisma migrate dev",
+    "backup": "node scripts/backup.js",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force"
   },
   "dependencies": {
+    "@prisma/client": "^6.0.0",
+    "cookie": "^1.1.1",
+    "jsonwebtoken": "^9.0.2",
     "next": "16.0.5",
+    "prisma": "^6.0.0",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }
