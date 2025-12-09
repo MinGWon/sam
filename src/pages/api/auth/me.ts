@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { parse } from "cookie";
-import { prisma } from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
-const USERINFO_URL = "https://pki.2check.io/api/oauth/userinfo";
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,48 +12,28 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const cookies = parse(req.headers.cookie || "");
-  const accessToken = cookies.access_token;
-
-  if (!accessToken) {
-    return res.status(401).json({ error: "Not authenticated" });
-  }
-
   try {
-    const userRes = await fetch(USERINFO_URL, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
+    // 쿠키에서 토큰 가져오기
+    const cookies = parse(req.headers.cookie || "");
+    const token = cookies.token;
 
-    if (!userRes.ok) {
-      return res.status(401).json({ error: "Invalid token" });
+    if (!token) {
+      return res.status(401).json({ error: "Not authenticated" });
     }
 
-    const pkiUser = await userRes.json();
-
-    // DB에서 사용자 정보 조회
-    const dbUser = await prisma.user.findUnique({
-      where: { pkiUserId: pkiUser.sub },
-    });
-
-    if (!dbUser) {
-      return res.status(200).json({
-        user: {
-          sub: pkiUser.sub,
-          name: pkiUser.name,
-        },
-      });
-    }
+    // JWT 검증
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
 
     return res.status(200).json({
       user: {
-        sub: pkiUser.sub,
-        name: dbUser.name,
-        visibleId: dbUser.visibleId,
-        phone: dbUser.phone,
+        sub: decoded.id,
+        id: decoded.id,
+        name: decoded.name,
+        email: decoded.email,
       },
     });
   } catch (error) {
-    console.error("Userinfo error:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    console.error("Auth check error:", error);
+    return res.status(401).json({ error: "Invalid token" });
   }
 }

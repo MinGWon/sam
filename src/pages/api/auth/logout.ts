@@ -10,22 +10,15 @@ export default async function handler(
   }
 
   // 쿠키 삭제
-  res.setHeader("Set-Cookie", [
-    serialize("access_token", "", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      path: "/",
-      maxAge: 0,
-    }),
-    serialize("refresh_token", "", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      path: "/",
-      maxAge: 0,
-    }),
-  ]);
+  const cookie = serialize("token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 0,
+    path: "/",
+  });
+
+  res.setHeader("Set-Cookie", cookie);
 
   return res.status(200).json({ success: true });
 }

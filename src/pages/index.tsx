@@ -74,14 +74,36 @@ export default function Home() {
   }, [displayText, isDeleting, textIndex]);
 
   const handleCertLoginSuccess = async (data: { accessToken: string; user: any }) => {
-    console.log("Certificate login success:", data);
-    setUser({
-      sub: data.user.id || data.user.sub,
-      name: data.user.name,
-      email: data.user.email,
-    });
-    // 대시보드로 이동
-    router.push("/app/dashboard");
+    console.log("🎉 인증서 로그인 성공:", data);
+    
+    try {
+      // 서버에 로그인 정보 전송하여 세션/쿠키 설정
+      const response = await fetch("/api/auth/pki-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user: data.user,
+          accessToken: data.accessToken,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("서버 로그인 실패");
+      }
+
+      const result = await response.json();
+      console.log("✅ 서버 로그인 성공:", result);
+
+      // 상태 업데이트 없이 바로 대시보드로 이동
+      console.log("🚀 대시보드로 이동 중...");
+      router.push("/app/dashboard");
+    } catch (error) {
+      console.error("❌ 로그인 처리 실패:", error);
+      alert("로그인 처리 중 오류가 발생했습니다.");
+      setShowCertModal(false);
+    }
   };
 
   if (loading) {
