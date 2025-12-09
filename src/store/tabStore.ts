@@ -1,28 +1,57 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+// 타입 정의 추가
+interface Device {
+  id: string;
+  deviceNumber: string;
+  location: string;
+  isActive: boolean;
+}
+
+interface Student {
+  id: string;
+  fingerprintId: number;
+  name: string;
+  grade: number | null;
+  class: number | null;
+  totalStudyTime: number;
+  attendanceCount: number;
+}
+
 export interface TabState {
-  // AttendanceViewer 상태
-  attendanceViewer?: {
+  // DeviceManagement 상태
+  deviceManagement?: {
     searchTerm: string;
-    selectedGrade: string;
-    selectedClass: string;
-    displayedStudents: any[];
-    selectedStudent: any | null;
-    dateRange: { start: string; end: string };
+    selectedDevice: Device | null;
+    displayedDevices: Device[];
   };
   
   // StudentManagement 상태
   studentManagement?: {
     searchTerm: string;
-    selectedStudents: string[];
-    sortBy: string;
+    selectedGrade: string;
+    selectedClass: string;
+    displayedStudents: Student[];
+    selectedStudent: Student | null;
   };
   
-  // DeviceManagement 상태
-  deviceManagement?: {
-    selectedDevice: string | null;
-    filterStatus: string;
+  // AttendanceViewer 상태
+  attendanceViewer?: {
+    searchTerm: string;
+    selectedGrade: string;
+    selectedClass: string;
+    displayedStudents: Student[];
+    selectedStudent: Student | null;
+    dateRange: {
+      start: string;
+      end: string;
+    };
+  };
+  
+  // RealtimeStudyStatus 상태 ⭐ NEW
+  realtimeStudyStatus?: {
+    selectedDevice: string;
   };
 }
 

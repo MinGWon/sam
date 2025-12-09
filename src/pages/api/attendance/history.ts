@@ -65,12 +65,11 @@ export default async function handler(
         checkOutTime: att.checkOutTime ? att.checkOutTime.toISOString() : null,
         studyDuration: att.studyDuration || 0,
         deviceNumber: att.deviceNumber,
-        deviceLocation: att.deviceLocation || "미지정",
       };
     });
 
     const totalStudyTime = attendances.reduce(
-      (sum, att) => sum + (att.studyTime || 0),
+      (sum, att) => sum + (att.studyDuration || 0),
       0
     );
 

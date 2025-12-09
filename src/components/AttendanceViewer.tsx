@@ -40,6 +40,7 @@ interface AttendanceRecord {
   checkInTime: string;
   checkOutTime: string | null;
   studyDuration: number;
+  deviceNumber?: string;
 }
 
 interface DailyAttendance {
@@ -258,11 +259,11 @@ export default function AttendanceViewer({ tabId }: { tabId?: string }) {
     
     records.forEach((record, idx) => {
       const checkIn = new Date(record.checkInTime);
-      const checkOut = new Date(record.checkOutTime);
+      const checkOut = record.checkOutTime ? new Date(record.checkOutTime) : null;
       
       // 시간을 소수점으로 변환 (예: 9:30 = 9.5)
       const startHour = checkIn.getHours() + checkIn.getMinutes() / 60;
-      const endHour = checkOut.getHours() + checkOut.getMinutes() / 60;
+      const endHour = checkOut ? checkOut.getHours() + checkOut.getMinutes() / 60 : startHour;
       
       // 전체 24시간 중에서의 위치 계산
       const left = (startHour / 24) * 100;
@@ -293,7 +294,7 @@ export default function AttendanceViewer({ tabId }: { tabId?: string }) {
             cursor: "pointer",
             boxShadow: "0 1px 2px rgba(48, 176, 110, 0.3)",
           }}
-          title={`${formatTimeDisplay(checkIn)} ~ ${formatTimeDisplay(checkOut)} (${formatTime(record.studyDuration)})`}
+          title={checkOut ? `${formatTimeDisplay(checkIn)} ~ ${formatTimeDisplay(checkOut)} (${formatTime(record.studyDuration)})` : `${formatTimeDisplay(checkIn)} ~ 공부 중`}
         />
       );
     });
@@ -878,7 +879,7 @@ export default function AttendanceViewer({ tabId }: { tabId?: string }) {
                                       setHoveredRecord({
                                         record,
                                         date: day.date,
-                                        deviceLocation: (record as any).deviceLocation || "미지정",
+                                        deviceLocation: record.deviceNumber || "미지정",
                                         position: {
                                           x: rect.left + rect.width / 2,
                                           y: rect.top + scrollTop,
@@ -958,7 +959,7 @@ export default function AttendanceViewer({ tabId }: { tabId?: string }) {
                                         setHoveredRecord({
                                           record,
                                           date: day.date,
-                                          deviceLocation: (record as any).deviceLocation || "미지정",
+                                          deviceLocation: record.deviceNumber || "미지정",
                                           position: {
                                             x: rect.left + rect.width / 2,
                                             y: rect.top + scrollTop,
@@ -995,7 +996,7 @@ export default function AttendanceViewer({ tabId }: { tabId?: string }) {
                                   setHoveredRecord({
                                     record,
                                     date: day.date,
-                                    deviceLocation: (record as any).deviceLocation || "미지정",
+                                    deviceLocation: record.deviceNumber || "미지정",
                                     position: {
                                       x: rect.left + rect.width / 2,
                                       y: rect.top + scrollTop,
@@ -1267,13 +1268,13 @@ export default function AttendanceViewer({ tabId }: { tabId?: string }) {
                   </div>
 
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <i className="fa-solid fa-location-dot" style={{ 
+                    <i className="fa-solid fa-computer" style={{ 
                       width: "20px", 
                       color: colors.gray600,
                       fontSize: "14px",
                     }} />
                     <span style={{ fontSize: "13px", color: colors.gray700, fontWeight: "600" }}>
-                      장소:
+                      기기:
                     </span>
                     <span style={{ fontSize: "13px", color: colors.gray900 }}>
                       {hoveredRecord.deviceLocation}
