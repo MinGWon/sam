@@ -94,12 +94,6 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
-
 @keyframes blink {
   0%, 50% {
     opacity: 1;
